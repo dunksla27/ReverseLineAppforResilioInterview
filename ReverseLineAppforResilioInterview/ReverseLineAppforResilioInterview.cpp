@@ -16,6 +16,7 @@ static void inputThreadFunction(std::ifstream* inputFile, std::queue<std::string
 		}
 	}
 
+	return;
 }
 
 static void reverseThreadFunction(bool* inProgress, std::queue<std::string>* inputLines, std::queue<std::string>* outputLines)
@@ -58,10 +59,17 @@ int main()
 	std::queue<std::string> inputLines;																					//queues to share data between threads while maintaining proper order of text lines
 	std::queue<std::string> outputLines;
 
-	bool inProgress = true;																								//booleans to terminate thread loops as they complete
+	bool inputInProgress = true;																						//booleans to terminate thread loops as they complete
+	bool reverseInProgress = true;
 
 	std::thread inputThread(inputThreadFunction, &inputFile, &inputLines);												//first thread to handle input from file
-	std::thread reverseThread(reverseThreadFunction, &inProgress, &inputLines, &outputLines);							//second thread to handle reverse string operation
-	std::thread outputThread(outputThreadFunction, &inProgress, &outputFile, &outputLines);								//third thread to hanle output to file
+	std::thread reverseThread(reverseThreadFunction, &inputInProgress, &inputLines, &outputLines);						//second thread to handle reverse string operation
+	std::thread outputThread(outputThreadFunction, &reverseInProgress, &outputFile, &outputLines);						//third thread to hanle output to file
+
+	inputThread.join();
+	inputInProgress = false;
+	reverseThread.join();
+	reverseInProgress = false;
+	outputThread.join();
 
 }

@@ -84,5 +84,8 @@ int main()
 	reverseInProgress = false;																							//notify output threat that text reversal is complete
 	outputThread.join();																								//wait for output thread to complete
 
+	inputFile.close();																									//ensure file streams close before termination
+	outputFile.close();																									//
+
 	return 0;																											//terminate main
 }
